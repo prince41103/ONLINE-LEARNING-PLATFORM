@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content="Study Planner - Flexible learning and skill-building for your future success. Join now for courses in Data Structures, Python, Java, and more.">
+<meta name="keywords" content="Study Planner, learning, quizzes, Data Structures, Python, Java, HTML, CSS">
+
+    <title>SkillEd</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  .hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px 0px 0px 50px;
+  }
+
+  .content {
+    max-width: 50%;
+  }
+
+  .hero-image img {
+    width: 700px; /* Increasing the image size to 600px */
+    height: auto; /* Ensuring the aspect ratio is maintained */
+  }
+
+  .btn-get-started, .btn-how-it-works {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #4A90E2;
+    color: white;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  .btn-how-it-works {
+    background-color: #777;
+  }
+
+  .btn-get-started:hover, .btn-how-it-works:hover {
+    opacity: 0.9;
+  }
+</style>
+
+
+
+
+</head>
+<body style="font-family: 'Poppins', sans-serif;">
+  <header>
+    <nav>
+        <div class="logo">
+            <i class="fa-brands fa-studiovinari fonts-main"></i>
+        </div>
+        <div class="auth-buttons">
+            <a href="login/login.html" class="sign-in" id="signInBtn">Sign In</a>
+            <a href="login/signup.html" class="register" id="registerBtn">Register</a>
+            <a href="php/logout.php" class="sign-out" id="signOutBtn" style="display: none;">Sign Out</a>
+        </div>
+    </nav>
+</header>
+
+
+
+    <section class="hero-section">
+      <div class="content">
+        <h2>
+          Unlock Your Potential <br />
+          And <span>Build Your Future</span>
+        </h2>
+        <p>
+          Explore our flexible learning options and choose the path to success
+          that suits you best. Start investing in your future today!
+        </p>
+        <div class="hero-buttons">
+          <a href="Task/main-task.html" class="btn-get-started">Create Task</a>
+          <a href="Dashboard/index (1).html" class="btn-how-it-works">Dashboard</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img
+          src="images/tourist-with-book.png"
+          alt="Student" 
+        />
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <!-- <img src="course-icon.png" alt="Courses" /> -->
+        <i class="fa-solid fa-list fonts"></i>
+
+        <h3>500+ Quiz Questions</h3>
+      </div>
+      <div class="feature">
+        <!--  <img src="expert-ic" alt="Expert Instruction" /> -->
+        <i class="fa-solid fa-table-columns fonts"></i>
+        <h3>Live Dashboard</h3>
+      </div>
+      <div class="feature">
+        <!-- <img src="lifetime-icon.png" alt="Lifetime Access" /> -->
+        <i class="fa-solid fa-bell fonts"></i>
+        <h3>Reminders</h3>
+      </div>
+    </section>
+
+    <section class="courses-section">
+      <h2>Our <span>Quizzes</span></h2>
+
+      <div class="courses-container">
+        <div class="course-card">
+          <img src="images/dsa logo.jpeg" alt="Graphic Design" />
+          <h3>Data Structures</h3>
+          <p>Become a Problem Solver – Zero to Hero</p>
+          <div class="course-info">
+            <span> 30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn">
+            <a href="Quizzes/Dsa-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a>
+          </button>
+                 </div>
+
+        <div class="course-card">
+          <img src="images/dbms logo.webp" alt="Adobe Photoshop" />
+          <h3>Database Mangement System</h3>
+          <p>Become a DBA</p>
+          <div class="course-info">
+            <span> 30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn"><a href="Quizzes/DBMS-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a></button>
+        </div>
+
+        <div class="course-card">
+          <img src="images/c++ logo.webp" alt="Adobe Illustrator" />
+          <h3>C++ with OOPS</h3>
+          <p>Learn C++ programming Language Rapidly</p>
+          <div class="course-info">
+            <span>30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn"><a href="Quizzes/C++-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a></button>
+        </div>
+
+        <div class="course-card">
+          <img src="images/python logo.png" alt="Adobe After Effects" />
+          <h3>Python</h3>
+          <p>Learn Python Effectively</p>
+          <div class="course-info">
+            <span> 30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn"><a href="Quizzes/python-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a></button>
+        </div>
+
+        <div class="course-card">
+          <img src="images/java logo.jpeg" alt="Google UX Design" />
+          <h3>CORE JAVA</h3>
+          <p>Learn Java with OOPS</p>
+          <div class="course-info">
+            <span> 30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn"><a href="Quizzes/java-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a></button>
+        </div>
+
+        <div class="course-card">
+          <img src="images/web development logo.jpg" alt="HTML & CSS" />
+          <h3>Web Design HTML & CSS</h3>
+          <p>Web Design For Beginners (HTML & CSS)</p>
+          <div class="course-info">
+            <span> 30 mins | 30 Questions</span>
+            <span class="price">FREE</span>
+          </div>
+          <button class="enroll-btn"><a href="Quizzes/webdev-quiz.html" style="color: white; text-decoration: none;">Start Quiz</a></button>
+        </div>
+      </div>
+
+      <div class="all-courses">
+        <button class="all-courses-btn">All Courses</button>
+      </div>
+    </section>
+
+    <section class="student-id-section">
+      <div class="container">
+        <div class="id-card-info">
+          <h2>Get Benefits For <span>Planning </span></h2>
+          <!-- <p>Order your student ID card now and enjoy the benefits of getting student discounts</p> -->
+
+          <div class="benefits">
+            <br />
+            <h3>Benefits you will gain:</h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle"></i> Enhanced organization of your study schedule
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i>  Improved time management skills
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Easy tracking of assignments and deadlines
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i>Access to personalized learning resources
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Ability to set and prioritize study goals
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="id-card-image">
+          <img
+            src="images/benifits-image.jpg"
+            alt="Students working on laptop"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="testimonials-section">    
+      <h2>What do our students say about Study Planner?</h2>
+      <div class="testimonial-slider">
+          <button class="prev">&#10094;</button>
+          <div class="testimonial-container">
+              <div class="testimonial-track">
+                  <!-- Testimonial Card 1 -->
+                  <div class="testimonial-card">
+                      <img src="images/review1.jpeg" alt="Anita Sharma" class="user-img" />
+                      <h3>Anita Sharma</h3>
+                      <div class="rating">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                      </div>
+                      <p>
+                          The Study Planner has transformed my study habits. I feel more organized and focused than ever before!
+                      </p>
+                  </div>
+  
+                  <!-- Testimonial Card 2 -->
+                  <div class="testimonial-card">
+                      <img src="images/review3.avif" alt="Ravi Kumar" class="user-img" />
+                      <h3>Ravi Kumar</h3>
+                      <div class="rating">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star-half-alt"></i>
+                      </div>
+                      <p>
+                          With the help of this planner, I've been able to track my assignments and manage my time effectively. Highly recommended!
+                      </p>
+                  </div>
+  
+                  <!-- Testimonial Card 3 -->
+                  <div class="testimonial-card">
+                      <img src="images/review2.avif" alt="Sneha Patel" class="user-img" />
+                      <h3>Sneha Patel</h3>
+                      <div class="rating">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                      </div>
+                      <p>
+                          I love how easy it is to prioritize my tasks and set goals. This planner has made my learning journey much smoother.
+                      </p>
+                  </div>
+
+
+
+                  <div class="testimonial-card">
+                    <img src="images/review2.avif" alt="Sneha Patel" class="user-img" />
+                    <h3>Sneha Patel</h3>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>
+                        I love how easy it is to prioritize my tasks and set goals. This planner has made my learning journey much smoother.
+                    </p>
+                </div>
+              </div>
+          </div>
+          <button class="next">&#10095;</button>
+      </div>
+  </section>
+  
+    <footer>
+      <div class="footer-container">
+          <p>Smart Education , a concept that describes learning in digital age , it enables learner to learn more effectively , efficiently and Confortably </p>
+          <p>&copy; Team Harshit Verma. All Rights Reserved.</p>
+
+          <nav class="footer-nav">
+              <a href="#">Privacy & Terms of Use</a>
+              <a href="#">About Us</a>
+              <a href="#">Why Trust Us</a>
+              <a href="#">Editorial Policy</a>
+              <a href="#" class="login">Login</a>
+              <a href="#">Email us</a>
+          </nav>
+
+          <div class="social-icons">
+              <a href="#" style="color: white"><i class="fa-brands fa-twitter"></i></a>
+              <a href="#" style="color: white"><i class="fa-brands fa-facebook"></i></a>
+              <a href="#" style="color: white"><i class="fa-brands fa-linkedin"></i></a>
+          </div>
+
+          <a href="#top" class="back-to-top">↑ Back to Top</a>
+      </div>
+  </footer>
+
+  <script>// Smooth scroll to the top when "Back to Top" is clicked
+    document.querySelector('.back-to-top').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+  </script>
+    <script src="login-status.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
