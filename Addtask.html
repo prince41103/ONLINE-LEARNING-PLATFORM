@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Study Planner</title>
+    <style>
+        /* CSS Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .planner-container {
+            width: 90%;
+            max-width: 900px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        .row, .section {
+            margin-bottom: 20px;
+        }
+        .row input, .row select, .section textarea, .section input[type="text"] {
+            width: 48%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .task-item {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .add-btn, .add-task-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .add-btn:hover, .add-task-btn:hover {
+            background-color: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <div class="planner-container">
+        <h1>Study Planner</h1>
+        <h2>Daily Goals</h2>
+
+        <!-- Today's Subjects Section -->
+        <form action="../php/dailytask.php" method="POST" onsubmit="collectInputs()">
+            <div class="section">
+                <h3>Today's Subjects</h3>
+                <input type="text" id="subjectInput" placeholder="Enter Subject" name="subject">
+                <button type="button" class="add-btn" onclick="addSubject()">Add Subject</button>
+                <div id="subjectList" class="subject-list"></div>
+                <input type="hidden" id="subjectsField" name="subjects">
+            </div>
+
+            <!-- Schedule Section with Start and End Time, Priority Option -->
+            <div class="section">
+                <h3>Schedule</h3>
+                <input type="text" id="taskInput" placeholder="Enter Task" name="task" style="width: 100%; margin-bottom: 10px;">
+                <div class="row">
+                    <input type="date" id="startDateInput" name="start_date">
+                    <input type="date" id="endDateInput" name="end_date">
+                    <input type="time" id="startTimeInput" name="start_time">
+                    <input type="time" id="endTimeInput" name="end_time">
+                </div>
+                <div class="row">
+                    <select id="priorityInput" name="priority">
+                        <option value="" disabled selected>Set Priority</option>
+                        <option value="Low">Low Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="High">High Priority</option>
+                    </select>
+                    <button type="button" class="add-btn" onclick="addSchedule()">Add to Schedule</button>
+                </div>
+                <div id="scheduleList" class="schedule-list"></div>
+                <input type="hidden" id="scheduleField" name="schedule">
+            </div>
+
+            <!-- Study Goals Section -->
+            <div class="section">
+                <h3>Study Goals</h3>
+                <textarea id="studyGoals" name="goals" placeholder="Write your study goals..." required></textarea>
+            </div>
+
+            <!-- Important Notes Section -->
+            <div class="section">
+                <h3>Important Notes</h3>
+                <textarea id="notes" name="notes" placeholder="Add any important notes..."></textarea>
+            </div>
+
+            <!-- Save Task Button -->
+            <button type="submit" class="add-task-btn">Save Task</button>
+        </form>
+    </div>
+
+    <script>
+        let subjects = [];
+        let schedule = [];
+
+        function addSubject() {
+            const subjectInput = document.getElementById("subjectInput").value;
+            if (subjectInput) {
+                subjects.push(subjectInput);
+                updateSubjectList();
+                document.getElementById("subjectInput").value = "";
+            } else {
+                alert("Please enter a subject.");
+            }
+        }
+
+        function updateSubjectList() {
+            const subjectList = document.getElementById("subjectList");
+            subjectList.innerHTML = "";
+            subjects.forEach(subject => {
+                const subjectItem = document.createElement("div");
+                subjectItem.className = "task-item";
+                subjectItem.textContent = subject;
+                subjectList.appendChild(subjectItem);
+            });
+        }
+
+        function addSchedule() {
+            const task = document.getElementById("taskInput").value;
+            const startDate = document.getElementById("startDateInput").value;
+            const endDate = document.getElementById("endDateInput").value;
+            const startTime = document.getElementById("startTimeInput").value;
+            const endTime = document.getElementById("endTimeInput").value;
+            const priority = document.getElementById("priorityInput").value;
+
+            if (task && startDate && endDate && startTime && endTime && priority) {
+                schedule.push({ task, startDate, endDate, startTime, endTime, priority });
+                updateScheduleList();
+                document.getElementById("taskInput").value = "";
+                document.getElementById("startDateInput").value = "";
+                document.getElementById("endDateInput").value = "";
+                document.getElementById("startTimeInput").value = "";
+                document.getElementById("endTimeInput").value = "";
+                document.getElementById("priorityInput").value = "";
+            } else {
+                alert("Please complete all fields for the task.");
+            }
+        }
+
+        function updateScheduleList() {
+            const scheduleList = document.getElementById("scheduleList");
+            scheduleList.innerHTML = "";
+            schedule.forEach(item => {
+                const scheduleItem = document.createElement("div");
+                scheduleItem.className = "task-item";
+                scheduleItem.textContent = `${item.task} | ${item.startDate} ${item.startTime} - ${item.endDate} ${item.endTime} | Priority: ${item.priority}`;
+                scheduleList.appendChild(scheduleItem);
+            });
+        }
+
+        function collectInputs() {
+            document.getElementById("subjectsField").value = JSON.stringify(subjects);
+            document.getElementById("scheduleField").value = JSON.stringify(schedule);
+        }
+    </script>
+</body>
+</html>

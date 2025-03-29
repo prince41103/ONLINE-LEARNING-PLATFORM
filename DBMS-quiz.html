@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DBMS Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .topics-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .topic {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .topic:hover {
+      background-color: #0056b3;
+    }
+    .quiz-section {
+      display: none;
+      margin-top: 30px;
+    }
+    .quiz-timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .question {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .answer-options label {
+      display: block;
+      margin: 5px 0;
+    }
+    .submit-btn, .restart-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background-color: #218838;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>DBMS Quiz</h1>
+    <div class="topics-list">
+      <div class="topic" data-topic="dbms">Database Management Systems</div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-timer" id="quiz-timer">Time Left: 30:00</div>
+      <div id="questions-container"></div>
+      <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result" id="result"></div>
+    <button class="restart-btn" id="restart-btn" style="display: none;">Take Another Quiz</button>
+  </div>
+
+  <script>
+    const topics = document.querySelectorAll('.topic');
+    const quizSection = document.getElementById('quiz-section');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultDiv = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let timer;
+    let timeLeft = 1800; // 30 minutes in seconds
+    let selectedAnswers = {};
+
+    // Sample Question Bank with DBMS Questions
+    const questionBank = {
+      'dbms': [
+        { question: "What does DBMS stand for?", options: ["Database Management System", "Data Base Management System", "Database Master System", "Data Base Management Server"], answer: "Database Management System" },
+        { question: "Which of the following is a type of DBMS?", options: ["Hierarchical", "Network", "Relational", "All of the above"], answer: "All of the above" },
+        { question: "What is the purpose of a primary key?", options: ["To identify records uniquely", "To join tables", "To sort data", "To enforce data integrity"], answer: "To identify records uniquely" },
+        { question: "Which SQL statement is used to create a table?", options: ["CREATE TABLE", "TABLE CREATE", "ADD TABLE", "NEW TABLE"], answer: "CREATE TABLE" },
+        { question: "What is normalization?", options: ["Reducing data redundancy", "Increasing data redundancy", "Sorting data", "Indexing data"], answer: "Reducing data redundancy" },
+        { question: "What type of relationship exists between two tables in a DBMS?", options: ["One-to-One", "One-to-Many", "Many-to-Many", "All of the above"], answer: "All of the above" },
+        { question: "Which of the following is a database language?", options: ["SQL", "HTML", "CSS", "Python"], answer: "SQL" },
+        { question: "What is a foreign key?", options: ["A key in the same table", "A key in another table", "A key that links two tables", "Both B and C"], answer: "Both B and C" },
+        { question: "Which of the following is not a DBMS?", options: ["MySQL", "Oracle", "SQL Server", "Excel"], answer: "Excel" },
+        { question: "What is the function of the DBMS?", options: ["Data storage", "Data manipulation", "Data retrieval", "All of the above"], answer: "All of the above" },
+        { question: "What is ACID in database management?", options: ["Atomicity, Consistency, Isolation, Durability", "Atomicity, Consistency, Integrity, Durability", "All, Consistency, Isolation, Durability", "Atomicity, Consistency, Isolation, Data"], answer: "Atomicity, Consistency, Isolation, Durability" },
+        { question: "What type of query retrieves data from a database?", options: ["INSERT", "UPDATE", "DELETE", "SELECT"], answer: "SELECT" },
+        { question: "What is a database schema?", options: ["A blueprint of the database", "A database table", "A database row", "A database column"], answer: "A blueprint of the database" },
+        { question: "Which SQL command is used to modify existing records in a table?", options: ["UPDATE", "EDIT", "MODIFY", "CHANGE"], answer: "UPDATE" },
+        { question: "What does a join do in SQL?", options: ["Combines rows from two or more tables", "Sorts data", "Filters data", "None of the above"], answer: "Combines rows from two or more tables" },
+        { question: "Which of the following is a DDL command?", options: ["CREATE", "SELECT", "INSERT", "UPDATE"], answer: "CREATE" },
+        { question: "What is the purpose of indexing in a database?", options: ["To speed up data retrieval", "To reduce data redundancy", "To enforce data integrity", "To sort data"], answer: "To speed up data retrieval" },
+        { question: "What is a stored procedure?", options: ["A set of SQL statements stored in the database", "A command to create a database", "A command to delete records", "A command to modify data"], answer: "A set of SQL statements stored in the database" },
+        { question: "Which of the following is a non-relational database?", options: ["MongoDB", "MySQL", "PostgreSQL", "Oracle"], answer: "MongoDB" },
+        { question: "What is data redundancy?", options: ["Storing the same data in multiple places", "Storing unique data", "Removing duplicates", "None of the above"], answer: "Storing the same data in multiple places" },
+        { question: "What does the term 'data integrity' mean?", options: ["Accuracy and consistency of data", "Availability of data", "Security of data", "All of the above"], answer: "Accuracy and consistency of data" },
+        { question: "Which of the following is not a characteristic of a relational database?", options: ["Data is organized in tables", "Relationships are established using foreign keys", "Data can be accessed using SQL", "Data is stored in flat files"], answer: "Data is stored in flat files" },
+        { question: "What is a view in a database?", options: ["A virtual table", "A table with data", "A physical copy of a table", "None of the above"], answer: "A virtual table" },
+        { question: "What is the purpose of a transaction in a DBMS?", options: ["To ensure data integrity", "To speed up queries", "To back up data", "To delete records"], answer: "To ensure data integrity" },
+        { question: "What is a data warehouse?", options: ["A database optimized for reporting and analysis", "A database used for transaction processing", "A collection of data", "A type of DBMS"], answer: "A database optimized for reporting and analysis" },
+      ],
+      // Add questions for other topics here
+    };
+
+    // Event listeners
+    topics.forEach(topic => {
+      topic.addEventListener('click', (event) => {
+        const selectedTopic = event.target.getAttribute('data-topic');
+        startQuiz(selectedTopic);
+      });
+    });
+
+    function startQuiz(topic) {
+      quizSection.style.display = 'block';
+      questionsContainer.innerHTML = '';
+      selectedAnswers = {};
+      timeLeft = 1800; // Reset timer
+      startTimer();
+
+      const questions = questionBank[topic];
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `<h3>Question ${index + 1}: ${q.question}</h3>
+          <div class="answer-options">
+            ${q.options.map(option => `<label><input type="radio" name="question${index}" value="${option}">${option}</label>`).join('')}
+          </div>`;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        quizTimer.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showResult();
+        }
+      }, 1000);
+    }
+
+    submitBtn.addEventListener('click', showResult);
+
+    function showResult() {
+      clearInterval(timer);
+      quizSection.style.display = 'none';
+      resultDiv.innerHTML = '';
+
+      const questions = questionBank['dbms'];
+      let score = 0;
+      questions.forEach((q, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+        if (selectedOption) {
+          selectedAnswers[`question${index}`] = selectedOption.value;
+          if (selectedOption.value === q.answer) {
+            score++;
+          }
+        }
+      });
+
+      resultDiv.innerHTML = `You scored ${score} out of ${questions.length}.`;
+      restartBtn.style.display = 'block';
+    }
+
+    restartBtn.addEventListener('click', () => {
+      resultDiv.innerHTML = '';
+      restartBtn.style.display = 'none';
+      quizSection.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

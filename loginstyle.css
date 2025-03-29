@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f7f8fc;
+}
+
+.login-container {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    -webkit-animation: colorchange 20s infinite alternate;
+
+}
+
+.login-form {
+    background-color: #fff;
+    padding: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-radius: 8px 0px 0px 8px;
+    width: 400px;
+
+}
+
+.login-form h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.login-form p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4A90E2;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background-color: #357ABD;
+}
+
+.login-form .forgot-password {
+    display: block;
+    margin-bottom: 20px;
+    text-align: right;
+    font-size: 12px;
+    color: #4A90E2;
+    text-decoration: none;
+}
+
+.login-form .forgot-password:hover {
+    text-decoration: underline;
+}
+
+.login-image {
+    margin-left: 0px;
+}
+
+.login-image img {
+    max-width: 410px;
+    border-radius: 0px 8px 8px 0px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fdfdfd;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4A90E2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+.modal-content button:hover {
+    background-color: #357ABD;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.bodyy{
+
+}
+
+
+@-webkit-keyframes backgroundColorChange {
+    0% {
+      background-color: rgb(206, 206, 218);
+    }
+    10% {
+      background-color: #e0d9e3;
+    }
+    20% {
+      background-color: #d5e8e4;
+    }
+    25% {
+      background-color: #b8a2a2;
+    }
+    30% {
+      background-color: #e5dbd4;
+    }
+    35% {
+      background-color: rgb(226, 219, 209);
+    }
+    40% {
+      background-color: rgb(219, 219, 228);
+    }
+    50% {
+      background-color: #f5cdf8;
+    }
+    55% {
+      background-color: #d5e1e0;
+    }
+    60% {
+      background-color: rgb(220, 220, 235);
+    }
+    65% {
+      background-color: #ebe3eb;
+    }
+    70% {
+      background-color: #d4dbdf;
+    }
+    80% {
+      background-color: #bef3ee;
+    }
+    90% {
+      background-color: #dadee1;
+    }
+    100% {
+      background-color: rgb(214, 204, 205);
+    }
+  }
+  
+  /* Apply the animation to the login form or body */
+  body{
+    -webkit-animation: backgroundColorChange 10s infinite;
+    animation: backgroundColorChange 30s infinite;
+  }
+  
+
+  

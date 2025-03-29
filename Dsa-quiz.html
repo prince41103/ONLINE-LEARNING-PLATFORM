@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .topics-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .topic {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .topic:hover {
+      background-color: #0056b3;
+    }
+    .quiz-section {
+      display: none;
+      margin-top: 30px;
+    }
+    .quiz-timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .question {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .answer-options label {
+      display: block;
+      margin: 5px 0;
+    }
+    .submit-btn, .restart-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background-color: #218838;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Select a DSA Topic</h1>
+    <div class="topics-list">
+      <div class="topic" data-topic="arrays">Arrays</div>
+      <div class="topic" data-topic="linked-lists">Linked Lists</div>
+      <div class="topic" data-topic="trees">Trees</div>
+      <div class="topic" data-topic="graphs">Graphs</div>
+      <div class="topic" data-topic="dynamic-programming">Dynamic Programming</div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-timer" id="quiz-timer">Time Left: 30:00</div>
+      <div id="questions-container"></div>
+      <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result" id="result"></div>
+    <button class="restart-btn" id="restart-btn" style="display: none;">Take Another Quiz</button>
+  </div>
+
+  <script>
+    const topics = document.querySelectorAll('.topic');
+    const quizSection = document.getElementById('quiz-section');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultDiv = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let timer;
+    let timeLeft = 1800; // 30 minutes in seconds
+    let selectedAnswers = {};
+
+    // Sample Question Bank with 30 Questions per Topic
+    const questionBank = {
+  'arrays': [
+    { question: "What is the time complexity of accessing an element in an array?", options: ["O(1)", "O(n)", "O(log n)", "O(n^2)"], answer: "O(1)" },
+    { question: "How do you find the largest element in an array?", options: ["Binary Search", "Linear Search", "Bubble Sort", "Insertion Sort"], answer: "Linear Search" },
+    { question: "Which sorting algorithm is the most efficient for large datasets?", options: ["Bubble Sort", "Quick Sort", "Selection Sort", "Insertion Sort"], answer: "Quick Sort" },
+    { question: "What is the best-case time complexity of Quick Sort?", options: ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"], answer: "O(n log n)" },
+    { question: "What does it mean if an array is sorted in-place?", options: ["The array is sorted externally", "The array is sorted using extra space", "The array is sorted without extra space", "None of the above"], answer: "The array is sorted without extra space" },
+    { question: "Which of the following algorithms has the worst-case time complexity of O(n^2)?", options: ["Merge Sort", "Heap Sort", "Selection Sort", "Radix Sort"], answer: "Selection Sort" },
+    { question: "Which is not a valid array declaration?", options: ["int arr[] = new int[10];", "int arr[10];", "int[] arr = new int[10];", "None of the above"], answer: "None of the above" },
+    { question: "What is the space complexity of the Merge Sort algorithm?", options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], answer: "O(n)" },
+    { question: "Which algorithm is used to search in a sorted array?", options: ["Linear Search", "Binary Search", "Depth-First Search", "Breadth-First Search"], answer: "Binary Search" },
+    { question: "What is the time complexity of Linear Search?", options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"], answer: "O(n)" },
+    { question: "Which array operation has constant time complexity?", options: ["Access", "Search", "Insertion", "Deletion"], answer: "Access" },
+    { question: "Which sorting algorithm is stable?", options: ["Selection Sort", "Quick Sort", "Merge Sort", "Heap Sort"], answer: "Merge Sort" },
+    { question: "Which of the following is true about arrays?", options: ["Arrays are fixed in size", "Arrays have dynamic size", "Array elements cannot be changed", "Array size increases automatically"], answer: "Arrays are fixed in size" },
+    { question: "What is the minimum number of swaps required to sort an array?", options: ["n", "n - 1", "n^2", "log n"], answer: "n - 1" },
+    { question: "Which algorithm is efficient for small arrays?", options: ["Merge Sort", "Quick Sort", "Bubble Sort", "Insertion Sort"], answer: "Insertion Sort" },
+    { question: "Which data structure is used to store a matrix?", options: ["Array", "Queue", "Stack", "Linked List"], answer: "Array" },
+    { question: "What is an associative array?", options: ["An array with key-value pairs", "An array of arrays", "A sorted array", "A multidimensional array"], answer: "An array with key-value pairs" },
+    { question: "How can we implement an array that automatically grows?", options: ["ArrayList", "Stack", "Linked List", "Queue"], answer: "ArrayList" },
+    { question: "Which algorithm has the best time complexity for sorting an array?", options: ["Bubble Sort", "Quick Sort", "Merge Sort", "Insertion Sort"], answer: "Merge Sort" },
+    { question: "Which of the following operations takes the longest time in arrays?", options: ["Accessing", "Deleting an element", "Inserting at the end", "Inserting at the beginning"], answer: "Inserting at the beginning" },
+    { question: "Which of the following is true about arrays in C++?", options: ["They have dynamic size", "They are zero-indexed", "They can contain elements of different types", "None"], answer: "They are zero-indexed" },
+    { question: "Which technique is used to solve maximum subarray sum problem?", options: ["Divide and Conquer", "Greedy Algorithm", "Dynamic Programming", "Brute Force"], answer: "Dynamic Programming" },
+    { question: "Which data structure would be most efficient for implementing a sparse array?", options: ["Linked List", "Hash Table", "Dynamic Array", "Static Array"], answer: "Hash Table" },
+    { question: "How do you reverse an array in O(n) time?", options: ["Sort it in reverse order", "Swap elements from start and end", "Insert elements in reverse order", "Use a stack"], answer: "Swap elements from start and end" },
+    { question: "Which is faster for random access?", options: ["Array", "Linked List", "Tree", "Graph"], answer: "Array" },
+    { question: "How do you check if an array is sorted?", options: ["Linear Search", "Binary Search", "Traverse and compare elements", "None of the above"], answer: "Traverse and compare elements" },
+    { question: "What is the advantage of using a dynamic array over a static array?", options: ["Faster access time", "Automatic resizing", "Lower memory usage", "None of the above"], answer: "Automatic resizing" },
+    { question: "What does realloc() function do in arrays?", options: ["Changes array size", "Reverses array", "Removes duplicates", "None of the above"], answer: "Changes array size" },
+    { question: "What is the time complexity of merging two sorted arrays?", options: ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"], answer: "O(n)" },
+    { question: "What is the worst-case time complexity for deleting an element in an array?", options: ["O(1)", "O(n)", "O(log n)", "O(n^2)"], answer: "O(n)" }
+  ],
+  'linked-lists': [
+    { question: "What is the primary advantage of a linked list over an array?", options: ["Efficient random access", "Fixed size", "Efficient insertion/deletion", "None"], answer: "Efficient insertion/deletion" },
+    { question: "Which linked list allows traversal in both directions?", options: ["Singly Linked List", "Doubly Linked List", "Circular Linked List", "Array"], answer: "Doubly Linked List" },
+    { question: "What is the time complexity of searching for an element in a singly linked list?", options: ["O(n)", "O(log n)", "O(1)", "O(n^2)"], answer: "O(n)" },
+    { question: "Which data structure is most efficient for implementing an undo feature?", options: ["Stack", "Queue", "Linked List", "Array"], answer: "Linked List" },
+    { question: "Which operation is not efficient in a singly linked list?", options: ["Insertion", "Deletion", "Searching", "Traversing"], answer: "Searching" },
+    { question: "What is the time complexity of inserting a node at the beginning of a singly linked list?", options: ["O(1)", "O(n)", "O(log n)", "O(n^2)"], answer: "O(1)" },
+    { question: "How do you find the middle node of a linked list in one pass?", options: ["Using two pointers", "Using a loop", "Recursion", "None"], answer: "Using two pointers" },
+    { question: "Which type of linked list contains a loop?", options: ["Circular Linked List", "Singly Linked List", "Doubly Linked List", "None"], answer: "Circular Linked List" },
+    { question: "How is memory allocated for nodes in a linked list?", options: ["Dynamically", "Statically", "Both", "None"], answer: "Dynamically" },
+    { question: "What is the time complexity of reversing a singly linked list?", options: ["O(1)", "O(n)", "O(n log n)", "O(n^2)"], answer: "O(n)" },
+    { question: "How is a node deleted from a singly linked list?", options: ["Change pointers", "Delete the entire list", "Swap nodes", "None"], answer: "Change pointers" },
+    { question: "What is the advantage of a circular linked list over a singly linked list?", options: ["Efficient traversal", "Random access", "Efficient insertion", "No need for NULL pointers"], answer: "No need for NULL pointers" },
+    { question: "What is a sentinel node in a linked list?", options: ["A dummy node used to simplify boundary conditions", "A node with maximum value", "A node with minimum value", "None"], answer: "A dummy node used to simplify boundary conditions" },
+    { question: "Which operation on a doubly linked list requires both forward and backward traversal?", options: ["Insertion", "Deletion", "Reversing", "Finding middle"], answer: "Reversing" },
+    { question: "What is the space complexity of a doubly linked list?", options: ["O(n)", "O(log n)", "O(1)", "O(n^2)"], answer: "O(n)" },
+    { question: "What is the time complexity of accessing the last node in a singly linked list?", options: ["O(1)", "O(log n)", "O(n)", "O(n^2)"], answer: "O(n)" },
+    { question: "What is the difference between a linked list and an array?", options: ["Linked lists use dynamic memory, arrays use static memory", "Arrays are slower", "Linked lists have random access", "None"], answer: "Linked lists use dynamic memory, arrays use static memory" },
+    { question: "In a doubly linked list, what happens if you delete a node?", options: ["The previous and next pointers are updated", "Only next pointer is updated", "List is reversed", "Nothing"], answer: "The previous and next pointers are updated" },
+    { question: "What is the time complexity for deleting a node from a doubly linked list?", options: ["O(1)", "O(n)", "O(n log n)", "O(n^2)"], answer: "O(1)" },
+    { question: "What is the best approach to detect a cycle in a linked list?", options: ["Two pointers (slow and fast)", "Recursion", "Sorting the list", "None"], answer: "Two pointers (slow and fast)" },
+    { question: "How do you merge two sorted linked lists?", options: ["Using recursion", "Insert elements in order", "Reverse the second list", "None"], answer: "Using recursion" },
+    { question: "What is the advantage of a doubly linked list?", options: ["Traversal in both directions", "Smaller size", "Fast random access", "All of the above"], answer: "Traversal in both directions" },
+    { question: "How do you delete a node without having access to the head in a singly linked list?", options: ["Copy data from the next node and delete the next node", "Reverse the list", "Use two pointers", "None"], answer: "Copy data from the next node and delete the next node" },
+    { question: "What is the time complexity of finding the nth node from the end in a singly linked list?", options: ["O(n)", "O(log n)", "O(1)", "O(n^2)"], answer: "O(n)" },
+    { question: "Which data structure is efficient for implementing a LRU Cache?", options: ["Doubly Linked List", "Stack", "Queue", "Hash Table"], answer: "Doubly Linked List" },
+    { question: "What is the minimum number of pointers required to reverse a singly linked list?", options: ["2", "3", "1", "None"], answer: "2" }
+  ],
+
+ 'trees': [
+    { question: "What is the maximum number of nodes at level 'l' in a binary tree?", options: ["2^l", "2^l - 1", "2^l + 1", "l^2"], answer: "2^l" },
+    { question: "What is the height of a binary tree with only one node?", options: ["0", "1", "2", "undefined"], answer: "0" },
+    { question: "In a binary search tree (BST), which traversal gives the elements in sorted order?", options: ["Pre-order", "In-order", "Post-order", "Level-order"], answer: "In-order" },
+    { question: "What is the time complexity of searching for an element in a balanced binary search tree?", options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"], answer: "O(log n)" },
+    { question: "Which of the following is a property of a binary tree?", options: ["Each node can have at most two children", "Each node can have any number of children", "The nodes are arranged in a sorted order", "None"], answer: "Each node can have at most two children" },
+    { question: "What is a complete binary tree?", options: ["All levels are completely filled except possibly for the last", "All nodes are filled from left to right", "Each node has exactly two children", "None"], answer: "All levels are completely filled except possibly for the last" },
+    { question: "In a full binary tree, how many leaves are there if there are 'n' internal nodes?", options: ["n", "n + 1", "2n", "2n + 1"], answer: "n + 1" },
+    { question: "What traversal method uses a stack and visits nodes in the order of root, left, right?", options: ["In-order", "Pre-order", "Post-order", "Level-order"], answer: "Pre-order" },
+    { question: "What is the time complexity for deleting a node in a BST?", options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"], answer: "O(log n)" },
+    { question: "What is the main advantage of using a self-balancing binary search tree?", options: ["Faster insertion", "Faster deletion", "Maintaining a balanced structure for faster operations", "None"], answer: "Maintaining a balanced structure for faster operations" },
+    { question: "Which data structure is used for implementing a binary heap?", options: ["Array", "Linked List", "Tree", "Graph"], answer: "Array" },
+    { question: "What type of binary tree allows nodes to have at most two children but does not require them to be filled completely?", options: ["Full Binary Tree", "Complete Binary Tree", "Perfect Binary Tree", "None"], answer: "Incomplete Binary Tree" },
+    { question: "Which of the following is true about a binary search tree?", options: ["Left child < Parent < Right child", "Left child > Parent > Right child", "No duplicates allowed", "Both A and C"], answer: "Both A and C" },
+    { question: "How do you determine the depth of a node in a binary tree?", options: ["Count the number of edges from the root to the node", "Count the number of nodes from the root to the node", "Depth is always zero", "None"], answer: "Count the number of edges from the root to the node" },
+    { question: "What is a leaf node?", options: ["A node with no children", "A node with two children", "A node with one child", "None"], answer: "A node with no children" },
+    { question: "In which traversal method do you visit nodes in the order of left, right, root?", options: ["In-order", "Pre-order", "Post-order", "Level-order"], answer: "Post-order" },
+    { question: "Which tree structure allows for efficient searching, insertion, and deletion?", options: ["Binary Tree", "Binary Search Tree", "Heap", "Trie"], answer: "Binary Search Tree" },
+    { question: "What is the time complexity of checking if a binary tree is balanced?", options: ["O(n)", "O(log n)", "O(n log n)", "O(n^2)"], answer: "O(n)" },
+    { question: "What is the main difference between a binary tree and a binary search tree?", options: ["Binary trees are unordered, BSTs are ordered", "Both have the same structure", "Binary trees cannot have duplicate values", "None"], answer: "Binary trees are unordered, BSTs are ordered" },
+    { question: "How do you find the lowest common ancestor (LCA) of two nodes in a binary search tree?", options: ["Find the deepest node", "Trace back from both nodes to the root", "The first common ancestor while traversing up", "None"], answer: "The first common ancestor while traversing up" },
+    { question: "Which algorithm is used to find the height of a binary tree?", options: ["Depth-First Search", "Breadth-First Search", "Level-order traversal", "None"], answer: "Depth-First Search" },
+    { question: "What is the purpose of a red-black tree?", options: ["To store integers", "To keep the tree balanced", "To traverse the tree faster", "None"], answer: "To keep the tree balanced" },
+    { question: "What is a B-tree used for?", options: ["Database indexing", "Memory management", "Graph representation", "None"], answer: "Database indexing" },
+    { question: "Which of the following trees is used in network routing algorithms?", options: ["Binary Tree", "Binary Search Tree", "Trie", "B-tree"], answer: "Trie" }
+],
+
+  'graphs': [
+    { question: "What is the time complexity of Depth-First Search (DFS) in a graph?", options: ["O(V + E)", "O(V)", "O(E)", "O(V * E)"], answer: "O(V + E)" },
+    { question: "What is the main difference between a directed graph and an undirected graph?", options: ["Direction of edges", "Number of edges", "Presence of cycles", "None"], answer: "Direction of edges" },
+    { question: "Which algorithm is used to find the shortest path in a weighted graph?", options: ["Kruskal's", "Prim's", "Dijkstra's", "Floyd-Warshall"], answer: "Dijkstra's" },
+    { question: "What does a minimum spanning tree represent?", options: ["Minimum distance between all nodes", "Maximum weight of edges", "Minimum path covering all vertices", "None"], answer: "Minimum distance between all nodes" },
+    { question: "What data structure is commonly used to implement a graph?", options: ["Array", "List", "Matrix", "All of the above"], answer: "All of the above" },
+    { question: "Which of the following is not a property of trees?", options: ["Acyclic", "Connected", "Directed", "None"], answer: "Directed" },
+    { question: "What algorithm is used to find the Minimum Spanning Tree?", options: ["Dijkstra's", "Kruskal's", "Floyd-Warshall", "None"], answer: "Kruskal's" },
+    { question: "In which type of graph is there exactly one path between any two nodes?", options: ["Directed Graph", "Undirected Graph", "Tree", "Cyclic Graph"], answer: "Tree" },
+    { question: "What is a bipartite graph?", options: ["A graph with no cycles", "A graph where nodes can be divided into two independent sets", "A graph with even edges", "None"], answer: "A graph where nodes can be divided into two independent sets" },
+    { question: "Which algorithm is used to detect cycles in a directed graph?", options: ["Kruskal's", "Dijkstra's", "DFS", "BFS"], answer: "DFS" },
+    { question: "What is an adjacency list?", options: ["A way to represent a graph using an array", "A way to represent a graph using a matrix", "A collection of lists where each list represents a vertex", "None"], answer: "A collection of lists where each list represents a vertex" },
+    { question: "What is the main advantage of using an adjacency list over an adjacency matrix?", options: ["Space efficiency", "Faster traversal", "Easier implementation", "None"], answer: "Space efficiency" },
+    { question: "What does BFS stand for?", options: ["Binary First Search", "Breadth First Search", "Balanced First Search", "Binary Forest Search"], answer: "Breadth First Search" },
+    { question: "What is the time complexity of Breadth-First Search (BFS)?", options: ["O(V + E)", "O(V)", "O(E)", "O(V * E)"], answer: "O(V + E)" },
+    { question: "Which traversal method uses a queue?", options: ["DFS", "BFS", "Both", "Neither"], answer: "BFS" },
+    { question: "What is a weighted graph?", options: ["A graph with equal weights on all edges", "A graph where each edge has a weight or cost", "A graph with only directed edges", "None"], answer: "A graph where each edge has a weight or cost" },
+    { question: "What algorithm is used to find the shortest path between all pairs of vertices?", options: ["Prim's", "Dijkstra's", "Floyd-Warshall", "Kruskal's"], answer: "Floyd-Warshall" },
+    { question: "Which of the following is true for a complete graph?", options: ["There is an edge between every pair of vertices", "It can have cycles", "It has at least one vertex", "None"], answer: "There is an edge between every pair of vertices" },
+    { question: "Which of the following is an application of graphs?", options: ["Web page ranking", "Network routing", "Social networks", "All of the above"], answer: "All of the above" },
+    { question: "What is a cycle in a graph?", options: ["A path that visits a vertex more than once", "A path that connects all vertices", "A path that has no edges", "None"], answer: "A path that visits a vertex more than once" },
+    { question: "What is the purpose of graph coloring?", options: ["To minimize the number of colors used", "To avoid adjacent vertices having the same color", "To find the shortest path", "None"], answer: "To avoid adjacent vertices having the same color" },
+    { question: "Which traversal visits nodes in the order of level by level?", options: ["DFS", "BFS", "Both", "Neither"], answer: "BFS" },
+    { question: "What is a tree with more than two children called?", options: ["Binary tree", "N-ary tree", "Directed tree", "None"], answer: "N-ary tree" }
+],
+
+ 'dynamic-programming': [
+    { question: "What is dynamic programming primarily used for?", options: ["Finding shortest paths", "Optimizing problems with overlapping subproblems", "Sorting data", "Searching"], answer: "Optimizing problems with overlapping subproblems" },
+    { question: "Which of the following problems can be solved using dynamic programming?", options: ["Fibonacci sequence", "Knapsack problem", "Longest common subsequence", "All of the above"], answer: "All of the above" },
+    { question: "What is the time complexity of the Fibonacci sequence using memoization?", options: ["O(n)", "O(2^n)", "O(n^2)", "O(1)"], answer: "O(n)" },
+    { question: "In dynamic programming, what does the term 'state' refer to?", options: ["The current variable", "A specific subproblem solution", "The final result", "None"], answer: "A specific subproblem solution" },
+    { question: "What is the main difference between memoization and tabulation?", options: ["Memoization is top-down; tabulation is bottom-up", "Memoization uses arrays; tabulation uses recursion", "Both are the same", "None"], answer: "Memoization is top-down; tabulation is bottom-up" },
+    { question: "Which problem uses the dynamic programming approach to find the minimum cost path in a grid?", options: ["Longest Increasing Subsequence", "Edit Distance", "Minimum Path Sum", "Knapsack Problem"], answer: "Minimum Path Sum" },
+    { question: "What is the optimal substructure property in dynamic programming?", options: ["A problem can be divided into subproblems", "Subproblems must be independent", "The optimal solution to the problem can be constructed from optimal solutions to its subproblems", "None"], answer: "The optimal solution to the problem can be constructed from optimal solutions to its subproblems" },
+    { question: "In which dynamic programming problem do you calculate the minimum number of edits to convert one string into another?", options: ["Longest Common Subsequence", "Edit Distance", "Knapsack Problem", "Coin Change"], answer: "Edit Distance" },
+    { question: "What is the typical space complexity of a dynamic programming solution?", options: ["O(1)", "O(n)", "O(n^2)", "Varies depending on the problem"], answer: "Varies depending on the problem" },
+    { question: "Which dynamic programming technique is used to solve the 0/1 Knapsack problem?", options: ["Memoization", "Tabulation", "Both", "None"], answer: "Both" },
+    { question: "What does the term 'overlapping subproblems' mean in dynamic programming?", options: ["Subproblems are independent", "Subproblems are solved multiple times", "All subproblems are unique", "None"], answer: "Subproblems are solved multiple times" },
+    { question: "What is the purpose of the DP array in a dynamic programming solution?", options: ["To store intermediate results", "To store final results", "To optimize space", "None"], answer: "To store intermediate results" },
+    { question: "Which of the following is an example of a problem that can be solved using dynamic programming?", options: ["Binary Search", "Mergesort", "Coin Change", "Selection Sort"], answer: "Coin Change" },
+    { question: "What is the space complexity of the optimal solution for the Fibonacci sequence using dynamic programming?", options: ["O(n)", "O(1)", "O(n^2)", "O(log n)"], answer: "O(n)" },
+    { question: "In the Longest Increasing Subsequence problem, which dynamic programming approach is commonly used?", options: ["Greedy", "Backtracking", "Memoization", "Tabulation"], answer: "Tabulation" },
+    { question: "Which of the following approaches is not typically used in dynamic programming?", options: ["Top-down", "Bottom-up", "Divide and conquer", "Iterative"], answer: "Divide and conquer" },
+    { question: "What is the time complexity of the 0/1 Knapsack problem using dynamic programming?", options: ["O(n)", "O(w)", "O(n * w)", "O(n^2)"], answer: "O(n * w)" },
+    { question: "What does 'w' represent in the 0/1 Knapsack problem?", options: ["Total weight", "Total items", "Maximum weight capacity", "None"], answer: "Maximum weight capacity" },
+    { question: "Which problem is solved by the following dynamic programming relation: dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight[i]] + value[i])?", options: ["Longest Common Subsequence", "0/1 Knapsack", "Edit Distance", "Fibonacci Sequence"], answer: "0/1 Knapsack" },
+    { question: "What does the 'backtracking' technique refer to in dynamic programming?", options: ["Exploring all possible solutions", "Making decisions one at a time", "Avoiding repetitive calculations", "None"], answer: "Exploring all possible solutions" },
+    { question: "Which dynamic programming problem involves finding the largest sum of non-adjacent numbers?", options: ["House Robber", "Fibonacci Sequence", "Longest Common Subsequence", "Minimum Path Sum"], answer: "House Robber" },
+    { question: "What is the significance of base cases in dynamic programming?", options: ["To define the maximum limit", "To handle edge cases", "To initiate the recurrence relation", "None"], answer: "To initiate the recurrence relation" },
+    { question: "What type of problems can be solved using dynamic programming?", options: ["Optimization problems", "Combinatorial problems", "Both", "None"], answer: "Both" },
+    { question: "In dynamic programming, what is the first step in solving a problem?", options: ["Identify the subproblems", "Construct the DP array", "Define the base case", "Choose an approach"], answer: "Identify the subproblems" },
+    { question: "What is the time complexity of finding the longest common subsequence between two strings of length m and n?", options: ["O(m + n)", "O(m * n)", "O(max(m, n))", "O(2^n)"], answer: "O(m * n)" },
+    { question: "Which of the following statements about dynamic programming is true?", options: ["It always requires less memory than recursion", "It is slower than brute force", "It is effective for problems with optimal substructure", "None"], answer: "It is effective for problems with optimal substructure" },
+    { question: "What is the role of a recurrence relation in dynamic programming?", options: ["To define the relationship between subproblems", "To store intermediate results", "To optimize memory", "None"], answer: "To define the relationship between subproblems" },
+    { question: "Which algorithm is used to solve the longest path in a Directed Acyclic Graph (DAG)?", options: ["Dijkstra's", "Bellman-Ford", "Dynamic Programming", "Kruskal's"], answer: "Dynamic Programming" },
+    { question: "In which dynamic programming problem do you need to find the number of ways to climb to the top of a staircase?", options: ["Fibonacci Sequence", "Stairs Climbing", "Knapsack Problem", "Longest Common Subsequence"], answer: "Stairs Climbing" },
+    { question: "What technique can be used to reduce the space complexity of dynamic programming solutions?", options: ["Iterative approach", "Tabulation", "Memoization", "Both A and B"], answer: "Both A and B" }
+],
+
+};
+
+
+    // Timer function
+    function startTimer() {
+      timer = setInterval(function() {
+        timeLeft--;
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        quizTimer.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+        }
+      }, 1000);
+    }
+
+    // Display questions for the selected topic
+    function displayQuestions(topic) {
+      const questions = questionBank[topic];
+      questionsContainer.innerHTML = ''; // Clear previous questions
+      selectedAnswers = {}; // Reset selected answers
+
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `
+          <h3>Q${index + 1}. ${q.question}</h3>
+          <div class="answer-options">
+            ${q.options.map((option, idx) => `
+              <label>
+                <input type="radio" name="question${index}" value="${option}">
+                ${option}
+              </label>
+            `).join('')}
+          </div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+
+        // Store selected answer
+        questionDiv.querySelectorAll('input').forEach(input => {
+          input.addEventListener('change', () => {
+            selectedAnswers[`question${index}`] = input.value;
+          });
+        });
+      });
+    }
+
+    // Submit quiz and calculate the score
+    function submitQuiz() {
+      clearInterval(timer);
+      let score = 0;
+      const topic = document.querySelector('.topic.active').getAttribute('data-topic');
+      const questions = questionBank[topic];
+
+      questions.forEach((q, index) => {
+        if (selectedAnswers[`question${index}`] === q.answer) {
+          score++;
+        }
+      });
+
+      const percentage = (score / questions.length) * 100;
+      resultDiv.textContent = `You scored ${score}/${questions.length} (${percentage.toFixed(2)}%)`;
+      resultDiv.style.display = 'block';
+      quizSection.style.display = 'none';
+      restartBtn.style.display = 'block';
+    }
+
+    // Event listeners for topic selection and quiz submission
+    topics.forEach(topic => {
+      topic.addEventListener('click', function() {
+        topics.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        displayQuestions(this.getAttribute('data-topic'));
+        quizSection.style.display = 'block';
+        resultDiv.style.display = 'none';
+        restartBtn.style.display = 'none';
+        timeLeft = 1800; // Reset timer to 30 minutes
+        startTimer();
+      });
+    });
+
+    // Submit quiz button
+    submitBtn.addEventListener('click', submitQuiz);
+
+    // Restart button
+    restartBtn.addEventListener('click', () => {
+      resultDiv.style.display = 'none';
+      restartBtn.style.display = 'none';
+      quizSection.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

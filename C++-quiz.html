@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ OOP Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .topics-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .topic {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .topic:hover {
+      background-color: #0056b3;
+    }
+    .quiz-section {
+      display: none;
+      margin-top: 30px;
+    }
+    .quiz-timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .question {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .answer-options label {
+      display: block;
+      margin: 5px 0;
+    }
+    .submit-btn, .restart-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background-color: #218838;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>C++ OOP Quiz</h1>
+    <div class="topics-list">
+      <div class="topic" data-topic="cpp-oop">C++ OOP Concepts</div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-timer" id="quiz-timer">Time Left: 30:00</div>
+      <div id="questions-container"></div>
+      <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result" id="result"></div>
+    <button class="restart-btn" id="restart-btn" style="display: none;">Take Another Quiz</button>
+  </div>
+
+  <script>
+    const topics = document.querySelectorAll('.topic');
+    const quizSection = document.getElementById('quiz-section');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultDiv = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let timer;
+    let timeLeft = 1800; // 30 minutes in seconds
+    let selectedAnswers = {};
+
+    // Sample Question Bank with C++ OOP Questions
+    const questionBank = {
+      'cpp-oop': [
+        { question: "What is the concept of encapsulation in OOP?", options: ["Hiding implementation details", "Inheriting properties", "Overriding methods", "None of the above"], answer: "Hiding implementation details" },
+        { question: "What is inheritance in C++?", options: ["Creating a new class from an existing class", "Hiding the data", "Multiple classes in one", "None of the above"], answer: "Creating a new class from an existing class" },
+        { question: "Which of the following is not an access specifier in C++?", options: ["public", "protected", "private", "static"], answer: "static" },
+        { question: "What does polymorphism allow in C++?", options: ["Same function name with different implementations", "Hiding the implementation", "Inheriting properties", "None of the above"], answer: "Same function name with different implementations" },
+        { question: "What is the purpose of a constructor?", options: ["To create objects", "To initialize class members", "To allocate memory", "Both A and B"], answer: "Both A and B" },
+        { question: "What is a pure virtual function?", options: ["A function that has no implementation", "A function with implementation", "A function that cannot be overridden", "None of the above"], answer: "A function that has no implementation" },
+        { question: "Which operator is used to create a pointer to a class object?", options: ["&", "*", "->", "."], answer: "new" },
+        { question: "What is method overriding?", options: ["Defining a new method", "Providing a new implementation of an inherited method", "Creating a method in a class", "None of the above"], answer: "Providing a new implementation of an inherited method" },
+        { question: "Which keyword is used to prevent a class from being inherited?", options: ["final", "static", "private", "sealed"], answer: "final" },
+        { question: "What is an abstract class?", options: ["A class that cannot be instantiated", "A class that can be instantiated", "A class with constructors", "None of the above"], answer: "A class that cannot be instantiated" },
+        { question: "What is a destructor?", options: ["A function that initializes objects", "A function that is called when an object goes out of scope", "A function that destroys an object", "Both B and C"], answer: "Both B and C" },
+        { question: "Which of the following is true about constructors?", options: ["They can return values", "They have the same name as the class", "They cannot be overloaded", "None of the above"], answer: "They have the same name as the class" },
+        { question: "What is the purpose of the 'this' pointer?", options: ["To refer to the current object", "To allocate memory", "To destroy objects", "None of the above"], answer: "To refer to the current object" },
+        { question: "What is dynamic binding?", options: ["Binding at compile time", "Binding at runtime", "Binding at link time", "None of the above"], answer: "Binding at runtime" },
+        { question: "Which of the following is a feature of C++?", options: ["Encapsulation", "Polymorphism", "Inheritance", "All of the above"], answer: "All of the above" },
+        { question: "What is the default access specifier for class members in C++?", options: ["public", "private", "protected", "default"], answer: "private" },
+        { question: "What is an interface in C++?", options: ["A class with only pure virtual functions", "A class that cannot be inherited", "A class that can be instantiated", "None of the above"], answer: "A class with only pure virtual functions" },
+        { question: "What is a friend function?", options: ["A function that can access private members of a class", "A function defined inside a class", "A function with a return type", "None of the above"], answer: "A function that can access private members of a class" },
+        { question: "What does the 'virtual' keyword do?", options: ["Allows a method to be overridden", "Prevents a method from being overridden", "Creates a method", "None of the above"], answer: "Allows a method to be overridden" },
+        { question: "What is multiple inheritance?", options: ["Inheriting from multiple classes", "Inheriting from a single class", "Inheriting from abstract classes", "None of the above"], answer: "Inheriting from multiple classes" },
+        { question: "What is a namespace?", options: ["A way to group related classes", "A way to prevent name conflicts", "A way to organize code", "All of the above"], answer: "All of the above" },
+        { question: "What is a template in C++?", options: ["A blueprint for creating classes", "A way to create functions that can operate with any data type", "A method to create constructors", "None of the above"], answer: "A way to create functions that can operate with any data type" },
+        { question: "What is exception handling?", options: ["A way to handle errors", "A way to manage memory", "A way to define classes", "None of the above"], answer: "A way to handle errors" },
+        { question: "What is the purpose of 'static' keyword?", options: ["To declare a variable with a fixed address", "To declare a variable that retains its value", "To declare a variable that cannot be changed", "None of the above"], answer: "To declare a variable that retains its value" },
+        { question: "What is the significance of the 'virtual destructor'?", options: ["To ensure proper cleanup of derived class objects", "To prevent memory leaks", "To allow dynamic binding", "None of the above"], answer: "To ensure proper cleanup of derived class objects" },
+        { question: "Which of the following is a characteristic of C++?", options: ["Object-oriented", "Procedural", "Functional", "All of the above"], answer: "Object-oriented" },
+        { question: "What is operator overloading?", options: ["Defining a new operator", "Changing the behavior of existing operators", "Creating new functions", "None of the above"], answer: "Changing the behavior of existing operators" }
+      ]
+    };
+
+    topics.forEach(topic => {
+      topic.addEventListener('click', () => {
+        quizSection.style.display = 'block';
+        startQuiz(topic.dataset.topic);
+      });
+    });
+
+    function startQuiz(topic) {
+      questionsContainer.innerHTML = '';
+      selectedAnswers = {};
+      timeLeft = 1800; // Reset time
+      startTimer();
+
+      const questions = questionBank[topic];
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `
+          <h2>Question ${index + 1}:</h2>
+          <p>${q.question}</p>
+          <div class="answer-options">
+            ${q.options.map(option => `
+              <label>
+                <input type="radio" name="question${index}" value="${option}">
+                ${option}
+              </label>
+            `).join('')}
+          </div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          quizTimer.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    submitBtn.addEventListener('click', submitQuiz);
+
+    function submitQuiz() {
+      clearInterval(timer);
+      const questions = questionsContainer.querySelectorAll('.question');
+      let score = 0;
+
+      questions.forEach((q, index) => {
+        const selectedOption = q.querySelector('input[type="radio"]:checked');
+        if (selectedOption) {
+          const userAnswer = selectedOption.value;
+          const correctAnswer = questionBank['cpp-oop'][index].answer;
+          if (userAnswer === correctAnswer) {
+            score++;
+          }
+        }
+      });
+
+      const totalQuestions = questions.length;
+      const percentage = (score / totalQuestions) * 100;
+
+      resultDiv.innerHTML = `You scored ${score} out of ${totalQuestions} (${percentage.toFixed(2)}%)`;
+      resultDiv.style.display = 'block';
+      restartBtn.style.display = 'block';
+      quizSection.style.display = 'none';
+    }
+
+    restartBtn.addEventListener('click', () => {
+      resultDiv.style.display = 'none';
+      restartBtn.style.display = 'none';
+      quizSection.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

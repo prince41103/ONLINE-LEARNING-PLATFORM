@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-Up Page</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f8fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .signup-container {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        /* Form Styles */
+        .signup-form {
+            width: 350px;
+            padding-right: 50px;
+        }
+
+        .signup-form h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .signup-form p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .signup-form label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .signup-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .signup-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4A90E2;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .signup-form button:hover {
+            background-color: #357ABD;
+        }
+
+        /* Image Styles */
+        .signup-image {
+            margin-left: 50px;
+        }
+
+        .signup-image img {
+            width: 300px;
+            border-radius: 8px;
+        }
+        
+@-webkit-keyframes backgroundColorChange {
+    0% {
+      background-color: rgb(206, 206, 218);
+    }
+    10% {
+      background-color: #e0d9e3;
+    }
+    20% {
+      background-color: #d5e8e4;
+    }
+    25% {
+      background-color: #b8a2a2;
+    }
+    30% {
+      background-color: #e5dbd4;
+    }
+    35% {
+      background-color: rgb(226, 219, 209);
+    }
+    40% {
+      background-color: rgb(219, 219, 228);
+    }
+    50% {
+      background-color: #f5cdf8;
+    }
+    55% {
+      background-color: #d5e1e0;
+    }
+    60% {
+      background-color: rgb(220, 220, 235);
+    }
+    65% {
+      background-color: #ebe3eb;
+    }
+    70% {
+      background-color: #d4dbdf;
+    }
+    80% {
+      background-color: #bef3ee;
+    }
+    90% {
+      background-color: #dadee1;
+    }
+    100% {
+      background-color: rgb(214, 204, 205);
+    }
+  }
+  
+  /* Apply the animation to the login form or body */
+  body{
+    -webkit-animation: backgroundColorChange 10s infinite;
+    animation: backgroundColorChange 30s infinite;
+  }
+  
+
+  
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <!-- Form Section -->
+        <div class="signup-form">
+            <h2>SIGN UP</h2>
+            <p>Enter your details to create an account</p>
+            <form id="signupForm" action="../php/register.php" method="post">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="John Doe" required>
+          
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="John@email.com" required>
+          
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+91-XXXXXXXXXX" required>
+          
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="••••••••" required>
+          
+              <button type="submit" name="submit">Sign Up</button>
+          </form>
+          
+        </div>
+        
+        <!-- Image Section -->
+        <div class="signup-image">
+            <img src="../images/signup-img.avif" alt="Graduate Image">
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            // Prevent default form submission
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            if (name == "" || email == "" || phone == "" || password == "") {
+                alert("All fields are required!");
+            } else {
+                alert("Sign-up successful!\nName: " + name + "\nEmail: " + email + "\nPhone: " + phone);
+                // Further logic can be added here to send data to a server or backend
+            }
+        });
+    </script>
+</body>
+</html>

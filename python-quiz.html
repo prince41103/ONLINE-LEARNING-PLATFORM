@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .topics-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .topic {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .topic:hover {
+      background-color: #0056b3;
+    }
+    .quiz-section {
+      display: none;
+      margin-top: 30px;
+    }
+    .quiz-timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .question {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .answer-options label {
+      display: block;
+      margin: 5px 0;
+    }
+    .submit-btn, .restart-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background-color: #218838;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Python Quiz</h1>
+    <div class="topics-list">
+      <div class="topic" data-topic="python">Python Programming</div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-timer" id="quiz-timer">Time Left: 30:00</div>
+      <div id="questions-container"></div>
+      <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result" id="result"></div>
+    <button class="restart-btn" id="restart-btn" style="display: none;">Take Another Quiz</button>
+  </div>
+
+  <script>
+    const topics = document.querySelectorAll('.topic');
+    const quizSection = document.getElementById('quiz-section');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultDiv = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let timer;
+    let timeLeft = 1800; // 30 minutes in seconds
+    let selectedAnswers = {};
+
+    // Sample Question Bank with Python Questions
+    const questionBank = {
+      'python': [
+        { question: "What is the output of print(2 ** 3)?", options: ["6", "8", "9", "Error"], answer: "8" },
+        { question: "Which of the following is a mutable data type?", options: ["Tuple", "String", "List", "Dictionary"], answer: "List" },
+        { question: "What keyword is used to create a function in Python?", options: ["function", "def", "func", "define"], answer: "def" },
+        { question: "What does the len() function do?", options: ["Returns the length of an object", "Adds two numbers", "Creates a list", "None of the above"], answer: "Returns the length of an object" },
+        { question: "Which of the following is used for comments in Python?", options: ["//", "#", "/* */", "--"], answer: "#" },
+        { question: "What is the output of print(type([]))?", options: ["<class 'list'>", "<class 'tuple'>", "<class 'dict'>", "None"], answer: "<class 'list'>" },
+        { question: "What does the 'pass' statement do?", options: ["Does nothing", "Terminates the loop", "Raises an exception", "None of the above"], answer: "Does nothing" },
+        { question: "Which function is used to read a file in Python?", options: ["read()", "get()", "open()", "fetch()"], answer: "open()" },
+        { question: "Which of the following is a built-in data type in Python?", options: ["List", "Dictionary", "Set", "All of the above"], answer: "All of the above" },
+        { question: "What is the correct way to create a set in Python?", options: ["set = {}", "set = []", "set = ()", "set = set()"], answer: "set = set()" },
+        { question: "What is the use of 'self' in Python?", options: ["To refer to the instance of the class", "To refer to the parent class", "To refer to the global variable", "None of the above"], answer: "To refer to the instance of the class" },
+        { question: "What does the 'with' statement do?", options: ["Handles exceptions", "Creates a context manager", "Defines a function", "None of the above"], answer: "Creates a context manager" },
+        { question: "What is a lambda function?", options: ["A named function", "An anonymous function", "A recursive function", "None of the above"], answer: "An anonymous function" },
+        { question: "Which module is used for regular expressions in Python?", options: ["regex", "re", "reg", "reexp"], answer: "re" },
+        { question: "What does 'import this' do?", options: ["Imports a library", "Displays the Zen of Python", "Shows the version", "None of the above"], answer: "Displays the Zen of Python" },
+        { question: "What is the purpose of the 'break' statement?", options: ["To exit a loop", "To skip an iteration", "To terminate a function", "None of the above"], answer: "To exit a loop" },
+        { question: "How do you define a class in Python?", options: ["class MyClass:", "define MyClass:", "MyClass() = class", "None of the above"], answer: "class MyClass:" },
+        { question: "Which operator is used for floor division in Python?", options: ["/", "//", "%", "**"], answer: "//" },
+        { question: "What is the output of print(bool(0))?", options: ["True", "False", "0", "None"], answer: "False" },
+        { question: "Which of the following statements creates a dictionary?", options: ["dict = {}", "dict = []", "dict = ()", "dict = dict()"], answer: "dict = {}" },
+        { question: "What is list comprehension?", options: ["A way to create lists", "A method to append elements", "A way to iterate over lists", "None of the above"], answer: "A way to create lists" },
+        { question: "What does the 'strip()' method do?", options: ["Removes whitespace", "Adds whitespace", "Sorts the list", "None of the above"], answer: "Removes whitespace" },
+        { question: "What is a module in Python?", options: ["A function", "A class", "A file containing Python code", "None of the above"], answer: "A file containing Python code" },
+        { question: "What is the difference between '==' and '==='?", options: ["No difference", "One checks value, the other checks type", "Both check value", "None of the above"], answer: "One checks value, the other checks type" },
+        { question: "What is exception handling?", options: ["Ignoring errors", "Managing errors", "Creating errors", "None of the above"], answer: "Managing errors" },
+        { question: "Which of the following is used to handle exceptions in Python?", options: ["try", "catch", "finally", "All of the above"], answer: "All of the above" },
+        { question: "What is the output of print('Hello' + 'World')?", options: ["HelloWorld", "Hello World", "Hello+World", "Error"], answer: "HelloWorld" },
+        { question: "Which statement is used to exit a function?", options: ["exit", "return", "break", "stop"], answer: "return" },
+        { question: "How do you create a virtual environment in Python?", options: ["python -m venv env", "create env", "python -env create", "None of the above"], answer: "python -m venv env" },
+        { question: "What is the purpose of the 'continue' statement?", options: ["To skip the current iteration", "To exit a loop", "To return a value", "None of the above"], answer: "To skip the current iteration" },
+        { question: "Which function converts a string to an integer?", options: ["int()", "str()", "float()", "convert()"], answer: "int()" },
+        { question: "What does the 'join()' method do?", options: ["Joins two strings", "Combines a list into a string", "Splits a string", "None of the above"], answer: "Combines a list into a string" }
+      ]
+    };
+
+    topics.forEach(topic => {
+      topic.addEventListener('click', () => {
+        quizSection.style.display = 'block';
+        startQuiz(topic.dataset.topic);
+      });
+    });
+
+    function startQuiz(topic) {
+      questionsContainer.innerHTML = '';
+      selectedAnswers = {};
+      timeLeft = 1800; // Reset time
+      startTimer();
+
+      const questions = questionBank[topic];
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `
+          <h2>Question ${index + 1}:</h2>
+          <p>${q.question}</p>
+          <div class="answer-options">
+            ${q.options.map(option => `
+              <label>
+                <input type="radio" name="question${index}" value="${option}">
+                ${option}
+              </label>
+            `).join('')}
+          </div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          quizTimer.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    submitBtn.addEventListener('click', submitQuiz);
+
+    function submitQuiz() {
+      clearInterval(timer);
+      const questions = questionsContainer.querySelectorAll('.question');
+      let score = 0;
+
+      questions.forEach((q, index) => {
+        const selectedOption = q.querySelector('input[type="radio"]:checked');
+        if (selectedOption) {
+          const userAnswer = selectedOption.value;
+          const correctAnswer = questionBank['python'][index].answer;
+          if (userAnswer === correctAnswer) {
+            score++;
+          }
+        }
+      });
+
+      const totalQuestions = questions.length;
+      const percentage = (score / totalQuestions) * 100;
+
+      resultDiv.innerHTML = `You scored ${score} out of ${totalQuestions} (${percentage.toFixed(2)}%)`;
+      resultDiv.style.display = 'block';
+      restartBtn.style.display = 'block';
+      quizSection.style.display = 'none';
+    }
+
+    restartBtn.addEventListener('click', () => {
+      resultDiv.style.display = 'none';
+      restartBtn.style.display = 'none';
+      quizSection.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

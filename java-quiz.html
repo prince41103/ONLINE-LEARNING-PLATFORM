@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .topics-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .topic {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .topic:hover {
+      background-color: #0056b3;
+    }
+    .quiz-section {
+      display: none;
+      margin-top: 30px;
+    }
+    .quiz-timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .question {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .answer-options label {
+      display: block;
+      margin: 5px 0;
+    }
+    .submit-btn, .restart-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background-color: #218838;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Java Quiz</h1>
+    <div class="topics-list">
+      <div class="topic" data-topic="java">Core Java</div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-timer" id="quiz-timer">Time Left: 30:00</div>
+      <div id="questions-container"></div>
+      <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result" id="result"></div>
+    <button class="restart-btn" id="restart-btn" style="display: none;">Take Another Quiz</button>
+  </div>
+
+  <script>
+    const topics = document.querySelectorAll('.topic');
+    const quizSection = document.getElementById('quiz-section');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultDiv = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let timer;
+    let timeLeft = 1800; // 30 minutes in seconds
+    let selectedAnswers = {};
+
+    // Sample Question Bank with Core Java Questions
+    const questionBank = {
+      'java': [
+        { question: "What is the default value of a boolean variable in Java?", options: ["true", "false", "0", "null"], answer: "false" },
+        { question: "Which of the following is not a keyword in Java?", options: ["static", "Boolean", "void", "Integer"], answer: "Integer" },
+        { question: "Which data type can store the largest value?", options: ["int", "float", "double", "byte"], answer: "double" },
+        { question: "What is the size of an int in Java?", options: ["16 bits", "32 bits", "64 bits", "8 bits"], answer: "32 bits" },
+        { question: "What does JVM stand for?", options: ["Java Virtual Machine", "Java Variable Machine", "Java Visual Machine", "Java Verified Machine"], answer: "Java Virtual Machine" },
+        { question: "Which of the following is a valid declaration of a char?", options: ["char c = 'a';", "char c = 'ab';", "char c = \"a\";", "char c = a;"], answer: "char c = 'a';" },
+        { question: "Which method is used to start a thread in Java?", options: ["run()", "start()", "init()", "execute()"], answer: "start()" },
+        { question: "What is the main purpose of garbage collection in Java?", options: ["To free memory", "To improve performance", "To delete objects", "To optimize code"], answer: "To free memory" },
+        { question: "What is the output of the following code: System.out.println(1 + 2 + '3');?", options: ["33", "6", "123", "Error"], answer: "33" },
+        { question: "What is the use of the 'final' keyword in Java?", options: ["To declare constants", "To prevent method overriding", "To prevent inheritance", "All of the above"], answer: "All of the above" },
+        { question: "Which collection class maintains the order of insertion?", options: ["HashMap", "TreeMap", "LinkedHashMap", "Hashtable"], answer: "LinkedHashMap" },
+        { question: "What is an interface in Java?", options: ["A class with no implementation", "A class with only abstract methods", "A collection of related methods", "All of the above"], answer: "All of the above" },
+        { question: "Which of the following is a wrapper class for primitive data type int?", options: ["Integer", "Int", "Number", "None"], answer: "Integer" },
+        { question: "What is the scope of a variable declared with the 'static' keyword?", options: ["Class level", "Method level", "Block level", "Instance level"], answer: "Class level" },
+        { question: "What is the output of System.out.println(5 == 5.0);?", options: ["true", "false", "Error", "None"], answer: "true" },
+        { question: "Which of the following statements is true about constructors in Java?", options: ["They have a return type", "They can be overloaded", "They cannot be private", "They are called manually"], answer: "They can be overloaded" },
+        { question: "What is the purpose of the 'this' keyword?", options: ["To refer to the current instance", "To call a method", "To create a new object", "None of the above"], answer: "To refer to the current instance" },
+        { question: "What is method overloading?", options: ["Same method name with different parameters", "Same method name with same parameters", "Different method names", "None of the above"], answer: "Same method name with different parameters" },
+        { question: "Which exception is thrown when an array is accessed with an invalid index?", options: ["ArrayIndexOutOfBoundsException", "IndexOutOfBoundsException", "NullPointerException", "ClassCastException"], answer: "ArrayIndexOutOfBoundsException" },
+        { question: "What is a package in Java?", options: ["A collection of classes", "A collection of methods", "A way to manage memory", "None of the above"], answer: "A collection of classes" },
+        { question: "What is the use of the 'super' keyword?", options: ["To call the parent class constructor", "To refer to the parent class method", "To call a method in the same class", "All of the above"], answer: "All of the above" },
+        { question: "What is the purpose of the 'break' statement?", options: ["To exit a loop", "To skip an iteration", "To terminate a method", "None of the above"], answer: "To exit a loop" },
+        { question: "What is a Singleton class?", options: ["A class that can have multiple instances", "A class that has only one instance", "A class that cannot be instantiated", "None of the above"], answer: "A class that has only one instance" },
+        { question: "Which of the following keywords is used to handle exceptions?", options: ["try", "catch", "finally", "All of the above"], answer: "All of the above" },
+        { question: "What is the output of the following code: System.out.println(0.1 + 0.2 == 0.3);?", options: ["true", "false", "Error", "None"], answer: "false" },
+        { question: "What is the purpose of the 'volatile' keyword?", options: ["To make a variable thread-safe", "To optimize performance", "To prevent memory leaks", "None of the above"], answer: "To make a variable thread-safe" },
+        { question: "Which of the following is a valid statement in Java?", options: ["int a = 10;", "int 1a = 10;", "int a = '10';", "int a = 10.0;"], answer: "int a = 10;" },
+        { question: "What is the output of System.out.println(5 + 3 + '8');?", options: ["58", "88", "Error", "None"], answer: "88" },
+        { question: "Which method must be implemented by all threads in Java?", options: ["run()", "execute()", "start()", "stop()"], answer: "run()" },
+        { question: "What is an abstract class?", options: ["A class with no implementation", "A class that cannot be instantiated", "A class with abstract methods", "All of the above"], answer: "All of the above" },
+        { question: "What is the output of System.out.println(5 + '5');?", options: ["10", "55", "Error", "None"], answer: "55" }
+      ]
+    };
+
+    topics.forEach(topic => {
+      topic.addEventListener('click', () => {
+        quizSection.style.display = 'block';
+        startQuiz(topic.dataset.topic);
+      });
+    });
+
+    function startQuiz(topic) {
+      questionsContainer.innerHTML = '';
+      selectedAnswers = {};
+      timeLeft = 1800; // Reset time
+      startTimer();
+
+      const questions = questionBank[topic];
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `
+          <h2>Question ${index + 1}:</h2>
+          <p>${q.question}</p>
+          <div class="answer-options">
+            ${q.options.map(option => `
+              <label>
+                <input type="radio" name="question${index}" value="${option}">
+                ${option}
+              </label>
+            `).join('')}
+          </div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          quizTimer.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    submitBtn.addEventListener('click', submitQuiz);
+
+    function submitQuiz() {
+      clearInterval(timer);
+      const questions = questionsContainer.querySelectorAll('.question');
+      let score = 0;
+
+      questions.forEach((q, index) => {
+        const selectedOption = q.querySelector('input[type="radio"]:checked');
+        if (selectedOption) {
+          const userAnswer = selectedOption.value;
+          const correctAnswer = questionBank['java'][index].answer;
+          if (userAnswer === correctAnswer) {
+            score++;
+          }
+        }
+      });
+
+      const totalQuestions = questions.length;
+      const percentage = (score / totalQuestions) * 100;
+
+      resultDiv.innerHTML = `You scored ${score} out of ${totalQuestions} (${percentage.toFixed(2)}%)`;
+      resultDiv.style.display = 'block';
+      restartBtn.style.display = 'block';
+      quizSection.style.display = 'none';
+    }
+
+    restartBtn.addEventListener('click', () => {
+      resultDiv.style.display = 'none';
+      restartBtn.style.display = 'none';
+      quizSection.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
